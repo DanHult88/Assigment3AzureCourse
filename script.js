@@ -1,20 +1,30 @@
-// Smoke test function to check if the website is up
-const https = require('https');
+const http = require('http');
 
-// Function to perform the HTTP GET request
-function smokeTest() {
-    const url = "https://<your-app-name>.azurewebsites.net"; // Replace with your Azure Web App URL
+// Replace with your deployed site's URL (make sure it is accessible)
+const url = 'http://your-web-app-name.azurewebsites.net';  // Replace this with your URL
 
-    https.get(url, (res) => {
-        if (res.statusCode === 200) {
-            console.log('Smoke test passed!');
-        } else {
-            console.log(`Smoke test failed with status code: ${res.statusCode}`);
-        }
-    }).on('error', (e) => {
-        console.log(`Error during smoke test: ${e.message}`);
-    });
-}
+const options = {
+  hostname: 'your-web-app-name.azurewebsites.net', // Use your actual domain or Azure app name
+  port: 80,
+  path: '/',
+  method: 'GET',
+};
 
-// Run the smoke test
-smokeTest();
+const req = http.request(options, (res) => {
+  console.log(`Status Code: ${res.statusCode}`);
+
+  if (res.statusCode === 200) {
+    console.log('Website is up and running!');
+    process.exit(0); // Successful exit (CI/CD will succeed)
+  } else {
+    console.log('Website returned an unexpected status code:', res.statusCode);
+    process.exit(1); // Failure (CI/CD will fail)
+  }
+});
+
+req.on('error', (e) => {
+  console.error(`Problem with request: ${e.message}`);
+  process.exit(1); // Failure (CI/CD will fail)
+});
+
+req.end();
