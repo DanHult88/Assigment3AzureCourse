@@ -22,3 +22,15 @@ jobs:
           slot-name: 'Production'  # The production slot
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}  # Secret for Azure publish profile
           package: .  # Use current directory, where the static files are located
+
+      # Step 3: Set up Node.js to run the smoke test
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify the version of Node.js you want to use
+
+      # Step 4: Run the smoke test without axios
+      - name: Run smoke test
+        run: |
+          echo "Running smoke test..."
+          node script.js  # Run the smoke test script
