@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
+    runs-on: windows-latest  # Change to use Windows runner
 
     steps:
       # Step 1: Check out the repository
