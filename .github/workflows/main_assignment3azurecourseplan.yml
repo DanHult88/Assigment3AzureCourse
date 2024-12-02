@@ -1,56 +1,24 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - Assignment3AzureCoursePlan
+name: Deploy static files to Azure Web App
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main  # Trigger on push to the main branch
+  workflow_dispatch:  # Allow manual trigger from the Actions tab
 
 jobs:
-  build:
-    runs-on: windows-latest
+  deploy:
+    runs-on: ubuntu-latest  # Use Ubuntu runner
 
     steps:
+      # Step 1: Check out the repository
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
+      # Step 2: Deploy static files to Azure Web App
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Assignment3AzureCoursePlan'
-          slot-name: 'Production'
-          package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}
+          app-name: 'Assignment3AzureCoursePlan'  # Replace with your Azure Web App name
+          slot-name: 'Production'  # The production slot
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}  # Secret for Azure publish profile
+          package: .  # Use current directory, where the static files are located
