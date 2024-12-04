@@ -27,7 +27,9 @@ jobs:
       - name: Run smoke test
         run: |
           echo "Running smoke test..."
-          RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "https://assigment3cloud.azurewebsites.net/api/Smoketest-Dan?code=${{ secrets.FUNCTION_KEY }}")
+          echo "Testing API with FUNCTION_KEY: ${FUNCTION_KEY}"
+          RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "https://assigment3cloud.azurewebsites.net/api/Smoketest-Dan?code=${{ secrets.FUNCTION_KEY }})"
+          echo "Response code: $RESPONSE"
           if [ "$RESPONSE" -eq 200 ]; then
             echo "Smoke test passed: 200 OK"
           else
