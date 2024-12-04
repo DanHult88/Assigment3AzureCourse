@@ -3,34 +3,25 @@ name: Deploy static files to Azure Web App
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
-  workflow_dispatch:  # Allow manual trigger from the Actions tab
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: windows-latest  # Change to use Windows runner
+    runs-on: windows-latest
 
     steps:
-      # Step 1: Check out the repository
       - uses: actions/checkout@v4
 
-      # Step 2: Deploy static files to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Assignment3AzureCoursePlan'  # Replace with your Azure Web App name
-          slot-name: 'Production'  # The production slot
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}  # Secret for Azure publish profile
-          package: .  # Use current directory, where the static files are located
+          app-name: 'Assignment3AzureCoursePlan'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}
+          package: .
 
-      # Step 3: Set up Node.js to run the smoke test
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'  # Specify the version of Node.js you want to use
-
-      # Step 4: Run the smoke test without axios
       - name: Run smoke test
         run: |
           echo "Running smoke test..."
-          node script.js  # Run the smoke test script
+          curl -s --head "https://assigment3cloud.azurewebsites.net/api/Smoketest-Dan?code=${{ secrets.FUNCTION_KEY }}"
