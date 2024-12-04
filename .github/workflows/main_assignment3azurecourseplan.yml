@@ -8,29 +8,29 @@ on:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out the repository
       - uses: actions/checkout@v4
 
+      # Step 2: Deploy static files to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Assignment3AzureCoursePlan'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}
-          package: .
+          app-name: 'Assignment3AzureCoursePlan'  # Replace with your Azure Web App name
+          slot-name: 'Production'  # The production slot
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_312A794C3C1848DC83F75E40A241DDBE }}  # Secret for Azure publish profile
+          package: .  # Use current directory, where the static files are located
 
+      # Step 3: Run smoke test
       - name: Run smoke test
         run: |
           echo "Running smoke test..."
-          $response = curl -s -w "%{http_code}" -o response.txt "https://assigment3cloud.azurewebsites.net/api/Smoketest-Dan?code=${{ secrets.FUNCTION_KEY }}"
-          $responseBody = Get-Content response.txt -Raw
-          echo "Smoke test response code: $response"
-          echo "Response body: $responseBody"
-          if ($response -eq 200) {
+          RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "https://assigment3cloud.azurewebsites.net/api/Smoketest-Dan?code=${{ secrets.FUNCTION_KEY }}")
+          if [ "$RESPONSE" -eq 200 ]; then
             echo "Smoke test passed: 200 OK"
-          } else {
-            echo "Smoke test failed: $response"
+          else
+            echo "Smoke test failed: HTTP status $RESPONSE"
             exit 1
-          }
+          fi
